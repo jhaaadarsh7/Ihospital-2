@@ -1,0 +1,96 @@
+@page "/login"
+@using Ihospital.Web.Services
+@inject NavigationManager Navigation
+@inject IApiService ApiService
+
+<PageTitle>Staff Login</PageTitle>
+
+<div class="survey-container">
+    <div class="survey-header">
+        <h1>Survey Platform</h1>
+    </div>
+
+    <div class="survey-content">
+        <h2 class="survey-title">Staff Login</h2>
+        <p class="survey-subtitle">Access the Survey Dashboard</p>
+
+        <div class="survey-form register-form">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" class="form-input" placeholder="Enter your username" @bind="username" />
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-input" placeholder="Enter your password" @bind="password" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="error-message">@errorMessage</div>
+            }
+        </div>
+
+        <div class="form-actions register-actions">
+            <button class="btn-primary btn-submit" @onclick="HandleLogin" disabled="@isLoggingIn">
+                @if (isLoggingIn)
+                {
+                    <span>Logging in...</span>
+                }
+                else
+                {
+                    <span>Login</span>
+                }
+            </button>
+            <button class="btn-secondary" @onclick="GoBack">Back to Survey</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string username = "";
+    private string password = "";
+    private string errorMessage = "";
+    private bool isLoggingIn = false;
+
+    private async Task HandleLogin()
+    {
+        errorMessage = "";
+
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            errorMessage = "Please enter your username";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            errorMessage = "Please enter your password";
+            return;
+        }
+
+        isLoggingIn = true;
+
+        try
+        {
+            // For now, simple validation - replace with actual API call
+            if (username == "admin" && password == "admin123")
+            {
+                Navigation.NavigateTo("/dashboard");
+            }
+            else
+            {
+                errorMessage = "Invalid username or password";
+            }
+        }
+        finally
+        {
+            isLoggingIn = false;
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

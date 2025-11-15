@@ -1,0 +1,393 @@
+@page "/dashboard"
+@using Ihospital.Web.Services
+@inject NavigationManager Navigation
+@inject IApiService ApiService
+
+<PageTitle>Survey Dashboard</PageTitle>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="header-left">
+            <span class="staff-badge">S</span>
+            <span class="staff-name">Staff Name</span>
+        </div>
+        <div class="header-center">
+            <h1>Survey Platform</h1>
+        </div>
+        <div class="header-right">
+            <button class="btn-logout" @onclick="Logout">Logout</button>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <h2 class="dashboard-title">Survey Dashboard</h2>
+        <p class="dashboard-subtitle">Search and analyze patient feedback response</p>
+
+        <div class="search-section">
+            <div class="search-grid">
+                <div class="search-field">
+                    <label>First Name</label>
+                    <input type="text" class="form-input" placeholder="Search By Firstname" @bind="searchFirstName" />
+                </div>
+
+                <div class="search-field">
+                    <label>Last Name</label>
+                    <input type="text" class="form-input" placeholder="Search By LastName" @bind="searchLastName" />
+                </div>
+
+                <div class="search-field">
+                    <label>Age Range</label>
+                    <select class="form-select" @bind="searchAgeRange">
+                        <option value="">Search age range</option>
+                        <option value="18-25">18-25</option>
+                        <option value="26-35">26-35</option>
+                        <option value="36-45">36-45</option>
+                        <option value="46-55">46-55</option>
+                        <option value="56-65">56-65</option>
+                        <option value="65+">65+</option>
+                    </select>
+                </div>
+
+                <div class="search-field">
+                    <label>State/Territory</label>
+                    <select class="form-select" @bind="searchState">
+                        <option value="">Select state</option>
+                        <option value="NSW">NSW</option>
+                        <option value="VIC">VIC</option>
+                        <option value="QLD">QLD</option>
+                        <option value="WA">WA</option>
+                        <option value="SA">SA</option>
+                        <option value="TAS">TAS</option>
+                        <option value="ACT">ACT</option>
+                        <option value="NT">NT</option>
+                    </select>
+                </div>
+
+                <div class="search-field">
+                    <label>Type of Service</label>
+                    <select class="form-select" @bind="searchServiceType">
+                        <option value="">Search service type</option>
+                        <option value="Day Surgery">Day Surgery</option>
+                        <option value="Rehabilitation">Rehabilitation</option>
+                        <option value="Operation/Surgery">Operation/Surgery</option>
+                        <option value="Emergency Care">Emergency Care</option>
+                        <option value="Outpatient Consultation">Outpatient Consultation</option>
+                        <option value="Diagnostic Imaging">Diagnostic Imaging</option>
+                        <option value="Laboratory Services">Laboratory Services</option>
+                    </select>
+                </div>
+
+                <div class="search-field">
+                    <label>In Room Service</label>
+                    <select class="form-select" @bind="searchRoomService">
+                        <option value="">Search room service</option>
+                        <option value="WiFi">WiFi</option>
+                        <option value="Meal Order System">Meal Order System</option>
+                        <option value="Nurse Assistant Call">Nurse Assistant Call</option>
+                        <option value="Entertainment System">Entertainment System</option>
+                        <option value="Climate Control">Climate Control</option>
+                        <option value="Private Bathroom">Private Bathroom</option>
+                        <option value="Visitor Seating">Visitor Seating</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-search" @onclick="SearchResponses">
+                <span class="search-icon">🔍</span> Search
+            </button>
+        </div>
+
+        <div class="results-section">
+            <h3 class="results-title">Search Results</h3>
+
+            @if (isLoading)
+            {
+                <p class="loading-message">Loading...</p>
+            }
+            else if (surveyResponses != null && surveyResponses.Any())
+            {
+                <div class="results-table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>State</th>
+                                <th>Service Type</th>
+                                <th>Room Type</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var response in surveyResponses)
+                            {
+                                <tr>
+                                    <td>@response.FirstName</td>
+                                    <td>@response.LastName</td>
+                                    <td>@response.AgeRange</td>
+                                    <td>@response.Gender</td>
+                                    <td>@response.State</td>
+                                    <td>@response.ServiceType</td>
+                                    <td>@response.RoomType</td>
+                                    <td>@response.Date</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="no-results">
+                    <p>No results found. Try adjusting your search criteria.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private string searchFirstName = "";
+    private string searchLastName = "";
+    private string searchAgeRange = "";
+    private string searchState = "";
+    private string searchServiceType = "";
+    private string searchRoomService = "";
+    private bool isLoading = false;
+
+    private List<SurveyResponseViewModel>? surveyResponses;
+    private List<SurveyResponseViewModel>? allResponses;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAllResponses();
+    }
+
+    private async Task LoadAllResponses()
+    {
+        isLoading = true;
+        try
+        {
+            // Load sample data for demonstration
+            surveyResponses = new List<SurveyResponseViewModel>
+            {
+                new SurveyResponseViewModel
+                {
+                    FirstName = "John",
+                    LastName = "Smith",
+                    AgeRange = "26-35",
+                    Gender = "Male",
+                    State = "NSW",
+                    ServiceType = "Day Surgery",
+                    RoomType = "Public Standard",
+                    Date = "2025-11-10"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "Sarah",
+                    LastName = "Johnson",
+                    AgeRange = "36-45",
+                    Gender = "Female",
+                    State = "VIC",
+                    ServiceType = "Rehabilitation",
+                    RoomType = "Private Room",
+                    Date = "2025-11-11"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "Michael",
+                    LastName = "Brown",
+                    AgeRange = "46-55",
+                    Gender = "Male",
+                    State = "QLD",
+                    ServiceType = "Emergency Care",
+                    RoomType = "Emergency Ward",
+                    Date = "2025-11-12"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "Emma",
+                    LastName = "Wilson",
+                    AgeRange = "18-25",
+                    Gender = "Female",
+                    State = "WA",
+                    ServiceType = "Outpatient Consultation",
+                    RoomType = "Consultation Room",
+                    Date = "2025-11-12"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "David",
+                    LastName = "Lee",
+                    AgeRange = "56-65",
+                    Gender = "Male",
+                    State = "SA",
+                    ServiceType = "Diagnostic Imaging",
+                    RoomType = "N/A",
+                    Date = "2025-11-13"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "Lisa",
+                    LastName = "Anderson",
+                    AgeRange = "26-35",
+                    Gender = "Female",
+                    State = "NSW",
+                    ServiceType = "Laboratory Services",
+                    RoomType = "N/A",
+                    Date = "2025-11-13"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "James",
+                    LastName = "Taylor",
+                    AgeRange = "36-45",
+                    Gender = "Male",
+                    State = "VIC",
+                    ServiceType = "Operation/Surgery",
+                    RoomType = "Private Room",
+                    Date = "2025-11-08"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "Olivia",
+                    LastName = "Martinez",
+                    AgeRange = "46-55",
+                    Gender = "Female",
+                    State = "QLD",
+                    ServiceType = "Day Surgery",
+                    RoomType = "Day Surgery Unit",
+                    Date = "2025-11-09"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "William",
+                    LastName = "Garcia",
+                    AgeRange = "65+",
+                    Gender = "Male",
+                    State = "TAS",
+                    ServiceType = "Rehabilitation",
+                    RoomType = "Rehabilitation Ward",
+                    Date = "2025-11-05"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "Sophia",
+                    LastName = "Rodriguez",
+                    AgeRange = "26-35",
+                    Gender = "Female",
+                    State = "ACT",
+                    ServiceType = "Emergency Care",
+                    RoomType = "Emergency Ward",
+                    Date = "2025-11-13"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "Daniel",
+                    LastName = "Martinez",
+                    AgeRange = "18-25",
+                    Gender = "Male",
+                    State = "NT",
+                    ServiceType = "Outpatient Consultation",
+                    RoomType = "Consultation Room",
+                    Date = "2025-11-11"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "Ava",
+                    LastName = "Thompson",
+                    AgeRange = "36-45",
+                    Gender = "Female",
+                    State = "NSW",
+                    ServiceType = "Diagnostic Imaging",
+                    RoomType = "Imaging Suite",
+                    Date = "2025-11-10"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "Anonymous",
+                    LastName = "",
+                    AgeRange = "26-35",
+                    Gender = "Male",
+                    State = "VIC",
+                    ServiceType = "Day Surgery",
+                    RoomType = "Public Standard",
+                    Date = "2025-11-12"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "Anonymous",
+                    LastName = "",
+                    AgeRange = "46-55",
+                    Gender = "Female",
+                    State = "QLD",
+                    ServiceType = "Emergency Care",
+                    RoomType = "Emergency Ward",
+                    Date = "2025-11-13"
+                },
+                new SurveyResponseViewModel
+                {
+                    FirstName = "Robert",
+                    LastName = "Davis",
+                    AgeRange = "56-65",
+                    Gender = "Male",
+                    State = "WA",
+                    ServiceType = "Operation/Surgery",
+                    RoomType = "Private Room",
+                    Date = "2025-11-07"
+                }
+            };
+            
+            // Store a copy for search filtering
+            allResponses = new List<SurveyResponseViewModel>(surveyResponses);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SearchResponses()
+    {
+        if (allResponses == null) return;
+        
+        isLoading = true;
+        try
+        {
+            // Filter responses based on search criteria
+            var filtered = allResponses.Where(r =>
+                (string.IsNullOrEmpty(searchFirstName) || r.FirstName.Contains(searchFirstName, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrEmpty(searchLastName) || r.LastName.Contains(searchLastName, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrEmpty(searchAgeRange) || r.AgeRange == searchAgeRange) &&
+                (string.IsNullOrEmpty(searchState) || r.State == searchState) &&
+                (string.IsNullOrEmpty(searchServiceType) || r.ServiceType.Contains(searchServiceType, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrEmpty(searchRoomService) || r.RoomType.Contains(searchRoomService, StringComparison.OrdinalIgnoreCase))
+            ).ToList();
+
+            surveyResponses = filtered;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void Logout()
+    {
+        Navigation.NavigateTo("/login");
+    }
+
+    public class SurveyResponseViewModel
+    {
+        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = "";
+        public string AgeRange { get; set; } = "";
+        public string Gender { get; set; } = "";
+        public string State { get; set; } = "";
+        public string ServiceType { get; set; } = "";
+        public string RoomType { get; set; } = "";
+        public string Date { get; set; } = "";
+    }
+}

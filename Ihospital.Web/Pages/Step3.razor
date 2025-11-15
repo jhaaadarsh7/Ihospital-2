@@ -1,0 +1,69 @@
+@page "/step3"
+@using Ihospital.Web.Services
+@inject NavigationManager Navigation
+@inject ISurveyStateService SurveyState
+
+<PageTitle>Survey Platform - Step 3</PageTitle>
+
+<div class="survey-container">
+    <div class="survey-header">
+        <h1>Survey Platform</h1>
+    </div>
+
+    <div class="survey-content">
+        <h2 class="survey-title">Patient Feedback Survey – Step 3</h2>
+        <p class="survey-subtitle">Tell us about your hospital stay</p>
+
+        <div class="survey-form">
+            <div class="form-group">
+                <label>Room Type</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="roomType" value="Public Standard Room" @onchange="@(() => roomType = "Public Standard Room")" checked="@(roomType == "Public Standard Room")" />
+                        <span>Public Standard Room</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="roomType" value="Public Cluster Room" @onchange="@(() => roomType = "Public Cluster Room")" checked="@(roomType == "Public Cluster Room")" />
+                        <span>Public Cluster Room</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="roomType" value="Public Single Room" @onchange="@(() => roomType = "Public Single Room")" checked="@(roomType == "Public Single Room")" />
+                        <span>Public Single Room</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="roomType" value="Private Single Room" @onchange="@(() => roomType = "Private Single Room")" checked="@(roomType == "Private Single Room")" />
+                        <span>Private Single Room</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-secondary" @onclick="GoBack"><span>←</span> Back</button>
+            <button class="btn-primary" @onclick="NextStep">Next <span>→</span></button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string roomType = "Public Standard Room";
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(SurveyState.RoomType))
+        {
+            roomType = SurveyState.RoomType;
+        }
+    }
+
+    private void NextStep()
+    {
+        SurveyState.RoomType = roomType;
+        Navigation.NavigateTo("/step4");
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/step2");
+    }
+}

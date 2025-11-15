@@ -1,0 +1,29 @@
+@page "/thankyou"
+@inject NavigationManager Navigation
+
+<PageTitle>Thank You</PageTitle>
+
+<div class="survey-container">
+    <div class="survey-header">
+        <h1>Survey Platform</h1>
+    </div>
+
+    <div class="survey-content" style="text-align: center;">
+        <h2 class="survey-title">Thank You!</h2>
+        <p class="survey-subtitle">Your feedback has been submitted successfully.</p>
+        <p style="margin: 30px 0; color: #666;">
+            We appreciate you taking the time to provide your valuable feedback.<br />
+            Your response helps us improve our services.
+        </p>
+        <button class="btn-primary" @onclick="GoHome" style="margin: 0 auto;">
+            Return to Home
+        </button>
+    </div>
+</div>
+
+@code {
+    private void GoHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

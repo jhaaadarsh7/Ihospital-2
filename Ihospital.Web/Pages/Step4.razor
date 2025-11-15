@@ -1,0 +1,103 @@
+@page "/step4"
+@using Ihospital.Web.Services
+@inject NavigationManager Navigation
+@inject ISurveyStateService SurveyState
+
+<PageTitle>Survey Platform - Step 4</PageTitle>
+
+<div class="survey-container">
+    <div class="survey-header">
+        <h1>Survey Platform</h1>
+    </div>
+
+    <div class="survey-content">
+        <h2 class="survey-title">Patient Feedback Survey – Step 4</h2>
+        <p class="survey-subtitle">Please rate your room facilities</p>
+
+        <div class="survey-form">
+            <div class="form-group">
+                <label>Room Facilities (Select all that apply)</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="wifi" />
+                        <span>WiFi</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="mealOrderSystem" />
+                        <span>Meal Order System</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="nurseAssistantCall" />
+                        <span>Nurse Assistant Call</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="entertainmentSystem" />
+                        <span>Entertainment System</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="climateControl" />
+                        <span>Climate Control</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="privateBathroom" />
+                        <span>Private Bathroom</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="visitorSeating" />
+                        <span>Visitor Seating</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-secondary" @onclick="GoBack"><span>←</span> Back</button>
+            <button class="btn-primary" @onclick="NextStep">Next <span>→</span></button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool wifi = false;
+    private bool mealOrderSystem = false;
+    private bool nurseAssistantCall = false;
+    private bool entertainmentSystem = false;
+    private bool climateControl = false;
+    private bool privateBathroom = false;
+    private bool visitorSeating = false;
+
+    protected override void OnInitialized()
+    {
+        if (SurveyState.RoomFacilities != null)
+        {
+            wifi = SurveyState.RoomFacilities.Contains("WiFi");
+            mealOrderSystem = SurveyState.RoomFacilities.Contains("Meal Order System");
+            nurseAssistantCall = SurveyState.RoomFacilities.Contains("Nurse Assistant Call");
+            entertainmentSystem = SurveyState.RoomFacilities.Contains("Entertainment System");
+            climateControl = SurveyState.RoomFacilities.Contains("Climate Control");
+            privateBathroom = SurveyState.RoomFacilities.Contains("Private Bathroom");
+            visitorSeating = SurveyState.RoomFacilities.Contains("Visitor Seating");
+        }
+    }
+
+    private void NextStep()
+    {
+        var facilities = new List<string>();
+        if (wifi) facilities.Add("WiFi");
+        if (mealOrderSystem) facilities.Add("Meal Order System");
+        if (nurseAssistantCall) facilities.Add("Nurse Assistant Call");
+        if (entertainmentSystem) facilities.Add("Entertainment System");
+        if (climateControl) facilities.Add("Climate Control");
+        if (privateBathroom) facilities.Add("Private Bathroom");
+        if (visitorSeating) facilities.Add("Visitor Seating");
+
+        SurveyState.RoomFacilities = facilities;
+
+        Navigation.NavigateTo("/register");
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/step3");
+    }
+}

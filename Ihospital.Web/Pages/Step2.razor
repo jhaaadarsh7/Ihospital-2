@@ -1,0 +1,105 @@
+@page "/step2"
+@using Ihospital.Web.Services
+@inject NavigationManager Navigation
+@inject ISurveyStateService SurveyState
+
+<PageTitle>Survey Platform - Step 2</PageTitle>
+
+<div class="survey-container">
+    <div class="survey-header">
+        <h1>Survey Platform</h1>
+    </div>
+
+    <div class="survey-content">
+        <h2 class="survey-title">Patient Feedback Survey – Step 2</h2>
+        <p class="survey-subtitle">Tell us about your hospital experience</p>
+
+        <div class="survey-form">
+            <div class="form-group">
+                <label>Type of Service (Select all that apply)</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="daySurgery" />
+                        <span>Day Surgery</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="rehabilitation" />
+                        <span>Rehabilitation</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="operationSurgery" />
+                        <span>Operation/Surgery</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="emergencyCare" />
+                        <span>Emergency Care</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="outpatientConsultation" />
+                        <span>Outpatient Consultation</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="diagnosticImaging" />
+                        <span>Diagnostic Imaging</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" @bind="laboratoryServices" />
+                        <span>Laboratory Services</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-secondary" @onclick="GoBack">Cancel</button>
+            <button class="btn-primary" @onclick="NextStep">Next <span>→</span></button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool daySurgery = false;
+    private bool rehabilitation = false;
+    private bool operationSurgery = false;
+    private bool emergencyCare = false;
+    private bool outpatientConsultation = false;
+    private bool diagnosticImaging = false;
+    private bool laboratoryServices = false;
+
+    protected override void OnInitialized()
+    {
+        // Load from state if exists
+        if (SurveyState.ServiceTypes != null)
+        {
+            daySurgery = SurveyState.ServiceTypes.Contains("Day Surgery");
+            rehabilitation = SurveyState.ServiceTypes.Contains("Rehabilitation");
+            operationSurgery = SurveyState.ServiceTypes.Contains("Operation/Surgery");
+            emergencyCare = SurveyState.ServiceTypes.Contains("Emergency Care");
+            outpatientConsultation = SurveyState.ServiceTypes.Contains("Outpatient Consultation");
+            diagnosticImaging = SurveyState.ServiceTypes.Contains("Diagnostic Imaging");
+            laboratoryServices = SurveyState.ServiceTypes.Contains("Laboratory Services");
+        }
+    }
+
+    private void NextStep()
+    {
+        // Save selected services
+        var services = new List<string>();
+        if (daySurgery) services.Add("Day Surgery");
+        if (rehabilitation) services.Add("Rehabilitation");
+        if (operationSurgery) services.Add("Operation/Surgery");
+        if (emergencyCare) services.Add("Emergency Care");
+        if (outpatientConsultation) services.Add("Outpatient Consultation");
+        if (diagnosticImaging) services.Add("Diagnostic Imaging");
+        if (laboratoryServices) services.Add("Laboratory Services");
+
+        SurveyState.ServiceTypes = services;
+
+        Navigation.NavigateTo("/step3");
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

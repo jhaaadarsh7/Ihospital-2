@@ -1,0 +1,290 @@
+@page "/register"
+@using Ihospital.Web.Services
+@inject NavigationManager Navigation
+@inject ISurveyStateService SurveyState
+@inject IApiService ApiService
+
+<PageTitle>Register as a Member</PageTitle>
+
+<div class="survey-container">
+    <div class="survey-header">
+        <h1>Survey Platform</h1>
+    </div>
+
+    <div class="survey-content">
+        <h2 class="survey-title">Register as a Member</h2>
+        <p class="survey-subtitle">Join the iHospital Patient Feedback Program</p>
+
+        <div class="survey-form register-form">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" class="form-input" placeholder="Enter your name" @bind="firstName" />
+            </div>
+
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" class="form-input" placeholder="Enter your last name" @bind="lastName" />
+            </div>
+
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" class="form-input date-input" @bind="dateOfBirth" />
+            </div>
+
+            <div class="form-group">
+                <label>Contact Number</label>
+                <input type="tel" class="form-input" placeholder="Enter your phone number" @bind="contactNumber" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="error-message">@errorMessage</div>
+            }
+
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="success-message">@successMessage</div>
+            }
+        </div>
+
+        <div class="form-actions register-actions">
+            <button class="btn-primary btn-submit" @onclick="SubmitSurvey" disabled="@isSubmitting">
+                @if (isSubmitting)
+                {
+                    <span>Submitting...</span>
+                }
+                else
+                {
+                    <span>Submit</span>
+                }
+            </button>
+            <button class="btn-secondary btn-skip" @onclick="SkipRegistration">Skip(Continue as Anonymous)</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string firstName = "";
+    private string lastName = "";
+    private DateTime? dateOfBirth = null;
+    private string contactNumber = "";
+    private string errorMessage = "";
+    private string successMessage = "";
+    private bool isSubmitting = false;
+
+    private async Task SubmitSurvey()
+    {
+        errorMessage = "";
+        successMessage = "";
+
+        // Validation
+        if (string.IsNullOrWhiteSpace(firstName))
+        {
+            errorMessage = "Please enter your first name";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(lastName))
+        {
+            errorMessage = "Please enter your last name";
+            return;
+        }
+
+        if (!dateOfBirth.HasValue)
+        {
+            errorMessage = "Please select your date of birth";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(contactNumber))
+        {
+            errorMessage = "Please enter your contact number";
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            // Prepare survey submission data - Using PascalCase for API
+            var surveyData = new
+            {
+                Respondent = new
+                {
+                    IsAnonymous = false,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    DateOfBirth = dateOfBirth.Value.ToString("yyyy-MM-dd"),
+                    Gender = SurveyState.Gender,
+                    ContactPhone = contactNumber,
+                    State = SurveyState.State,
+                    HomeSuburb = SurveyState.HomeSuburb,
+                    HomePostcode = SurveyState.HomePostcode
+                },
+                Responses = PrepareResponses()
+            };
+
+            var (success, message) = await ApiService.SubmitSurveyAsync(surveyData);
+
+            if (success)
+            {
+                successMessage = "Survey submitted successfully!";
+                await Task.Delay(1500);
+                SurveyState.Clear();
+                Navigation.NavigateTo("/thankyou");
+            }
+            else
+            {
+                errorMessage = message;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private async Task SkipRegistration()
+    {
+        isSubmitting = true;
+        errorMessage = "";
+
+        try
+        {
+            // Submit as anonymous - Using PascalCase for API
+            var surveyData = new
+            {
+                Respondent = new
+                {
+                    IsAnonymous = true,
+                    Gender = SurveyState.Gender,
+                    State = SurveyState.State,
+                    HomeSuburb = SurveyState.HomeSuburb,
+                    HomePostcode = SurveyState.HomePostcode
+                },
+                Responses = PrepareResponses()
+            };
+
+            var (success, message) = await ApiService.SubmitSurveyAsync(surveyData);
+
+            if (success)
+            {
+                SurveyState.Clear();
+                Navigation.NavigateTo("/thankyou");
+            }
+            else
+            {
+                errorMessage = message;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private List<object> PrepareResponses()
+    {
+        var responses = new List<object>();
+
+        // If we have question options loaded, build a mapping for quick lookup
+        var optionLookup = new Dictionary<int, Dictionary<string,int>>();
+        if (_questions != null)
+        {
+            foreach (var q in _questions)
+            {
+                if (q.Options == null) continue;
+                var map = new Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
+                foreach (var o in q.Options)
+                {
+                    if (!string.IsNullOrEmpty(o.OptionText))
+                        map[o.OptionText.Trim()] = o.OptionId;
+                }
+                optionLookup[q.QuestionId] = map;
+            }
+        }
+
+        // Question 1: Age Group (Question_ID = 1)
+        if (!string.IsNullOrEmpty(SurveyState.AgeRange))
+        {
+            responses.Add(new
+            {
+                QuestionId = 1,
+                OptionId = (optionLookup.TryGetValue(1, out var m1) && m1.TryGetValue((SurveyState.AgeRange ?? "").Trim(), out var oid)) ? (int?)oid : (int?)null,
+                AnswerText = SurveyState.AgeRange
+            });
+        }
+
+        // Question 3: Services Used (Question_ID = 3) - MultiChoice
+        if (SurveyState.ServiceTypes != null && SurveyState.ServiceTypes.Any())
+        {
+            foreach (var service in SurveyState.ServiceTypes)
+            {
+                responses.Add(new
+                {
+                    QuestionId = 3,
+                    OptionId = (optionLookup.TryGetValue(3, out var m3) && m3.TryGetValue((service ?? "").Trim(), out var soid)) ? (int?)soid : (int?)null,
+                    AnswerText = service
+                });
+            }
+        }
+
+        // Question 4: Additional Comments (Question_ID = 4) - Text
+        // Add room type and facilities as comments
+        var comments = new List<string>();
+        if (!string.IsNullOrEmpty(SurveyState.RoomType))
+        {
+            comments.Add($"Room Type: {SurveyState.RoomType}");
+        }
+        if (SurveyState.RoomFacilities != null && SurveyState.RoomFacilities.Any())
+        {
+            comments.Add($"Facilities: {string.Join(", ", SurveyState.RoomFacilities)}");
+        }
+        if (comments.Any())
+        {
+            responses.Add(new
+            {
+                QuestionId = 4,
+                OptionId = (int?)null,
+                AnswerText = string.Join(". ", comments)
+            });
+        }
+
+        // If no responses collected, add a default response to prevent empty submission
+        if (!responses.Any())
+        {
+            responses.Add(new
+            {
+                QuestionId = 4,
+                OptionId = (int?)null,
+                AnswerText = "Survey completed"
+            });
+        }
+
+        return responses;
+    }
+
+    // Questions and options cached locally
+    private List<QuestionDto>? _questions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load question definitions and options from API so we can map option text -> ids
+        try
+        {
+            _questions = await ApiService.GetQuestionsAsync();
+        }
+        catch
+        {
+            _questions = new List<QuestionDto>();
+        }
+    }
+}

@@ -1,0 +1,106 @@
+@page "/"
+@using Ihospital.Web.Services
+@inject NavigationManager Navigation
+@inject ISurveyStateService SurveyState
+
+<PageTitle>Survey Platform</PageTitle>
+
+<div class="survey-container">
+    <div class="survey-header">
+        <h1>Survey Platform</h1>
+    </div>
+
+    <div class="survey-content">
+        <h2 class="survey-title">Patient Feedback Survey – Step 1</h2>
+        <p class="survey-subtitle">Let's start with the basic information</p>
+
+        <div class="survey-form">
+            <div class="form-group">
+                <label>Gender</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="gender" value="Male" @onchange="@(() => gender = "Male")" checked="@(gender == "Male")" />
+                        <span>Male</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="gender" value="Female" @onchange="@(() => gender = "Female")" checked="@(gender == "Female")" />
+                        <span>Female</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="gender" value="Others" @onchange="@(() => gender = "Others")" checked="@(gender == "Others")" />
+                        <span>Others</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Age Range</label>
+                <select class="form-select" @bind="ageRange">
+                    <option value="">Select your age range</option>
+                    <option value="18-25">18-25</option>
+                    <option value="26-35">26-35</option>
+                    <option value="36-45">36-45</option>
+                    <option value="46-55">46-55</option>
+                    <option value="56-65">56-65</option>
+                    <option value="65+">65+</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>State/Territory</label>
+                <select class="form-select" @bind="state">
+                    <option value="">Select your state or territory</option>
+                    <option value="NSW">New South Wales</option>
+                    <option value="VIC">Victoria</option>
+                    <option value="QLD">Queensland</option>
+                    <option value="WA">Western Australia</option>
+                    <option value="SA">South Australia</option>
+                    <option value="TAS">Tasmania</option>
+                    <option value="ACT">Australian Capital Territory</option>
+                    <option value="NT">Northern Territory</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Subrub</label>
+                <input type="text" class="form-input" placeholder="Enter your suburb" @bind="suburb" />
+            </div>
+
+            <div class="form-group">
+                <label>Postcode</label>
+                <input type="text" class="form-input" placeholder="Enter your postcode" @bind="postcode" />
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-secondary" @onclick="Cancel">Cancel</button>
+            <button class="btn-primary" @onclick="NextStep">Next <span>→</span></button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string gender = "Male";
+    private string ageRange = "";
+    private string state = "";
+    private string suburb = "";
+    private string postcode = "";
+
+    private void NextStep()
+    {
+        // Save data to state service
+        SurveyState.Gender = gender;
+        SurveyState.AgeRange = ageRange;
+        SurveyState.State = state;
+        SurveyState.HomeSuburb = suburb;
+        SurveyState.HomePostcode = postcode;
+
+        Navigation.NavigateTo("/step2");
+    }
+
+    private void Cancel()
+    {
+        SurveyState.Clear();
+        Navigation.NavigateTo("/");
+    }
+}
