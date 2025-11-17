@@ -36,6 +36,21 @@
                     </label>
                 </div>
             </div>
+
+            @* Show Stay Period if Private Single or Public Single selected *@
+            @if (roomType == "Private Single Room" || roomType == "Public Single Room")
+            {
+                <div class="form-group">
+                    <label>How long was your stay?</label>
+                    <select class="form-select" @bind="stayPeriod">
+                        <option value="">Select stay period</option>
+                        <option value="1 day">1 day</option>
+                        <option value="2-3 days">2-3 days</option>
+                        <option value="4-7 days">4-7 days</option>
+                        <option value="More than 1 week">More than 1 week</option>
+                    </select>
+                </div>
+            }
         </div>
 
         <div class="form-actions">
@@ -47,6 +62,7 @@
 
 @code {
     private string roomType = "Public Standard Room";
+    private string stayPeriod = "";
 
     protected override void OnInitialized()
     {
@@ -54,11 +70,16 @@
         {
             roomType = SurveyState.RoomType;
         }
+        if (!string.IsNullOrEmpty(SurveyState.StayPeriod))
+        {
+            stayPeriod = SurveyState.StayPeriod;
+        }
     }
 
     private void NextStep()
     {
         SurveyState.RoomType = roomType;
+        SurveyState.StayPeriod = stayPeriod;
         Navigation.NavigateTo("/step4");
     }
 

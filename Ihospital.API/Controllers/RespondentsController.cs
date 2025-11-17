@@ -38,7 +38,13 @@ namespace Ihospital.API.Controllers
                     HomeSuburb = r.HomeSuburb,
                     HomePostcode = r.HomePostcode,
                     MacAddress = r.MacAddress,
-                    CreatedDateTime = r.CreatedDateTime
+                    CreatedDateTime = r.CreatedDateTime,
+                    HasPrivateInsurance = r.HasPrivateInsurance,
+                    InsuranceProviders = r.InsuranceProviders,
+                    DischargePlans = r.DischargePlans,
+                    StayPeriod = r.StayPeriod,
+                    WifiPlan = r.WifiPlan,
+                    WifiSatisfaction = r.WifiSatisfaction
                 })
                 .OrderByDescending(r => r.CreatedDateTime)
                 .ToListAsync();
@@ -67,7 +73,13 @@ namespace Ihospital.API.Controllers
                     HomeSuburb = r.HomeSuburb,
                     HomePostcode = r.HomePostcode,
                     MacAddress = r.MacAddress,
-                    CreatedDateTime = r.CreatedDateTime
+                    CreatedDateTime = r.CreatedDateTime,
+                    HasPrivateInsurance = r.HasPrivateInsurance,
+                    InsuranceProviders = r.InsuranceProviders,
+                    DischargePlans = r.DischargePlans,
+                    StayPeriod = r.StayPeriod,
+                    WifiPlan = r.WifiPlan,
+                    WifiSatisfaction = r.WifiSatisfaction
                 })
                 .FirstOrDefaultAsync();
 
@@ -94,7 +106,13 @@ namespace Ihospital.API.Controllers
                 HomeSuburb = dto.HomeSuburb,
                 HomePostcode = dto.HomePostcode,
                 MacAddress = dto.MacAddress,
-                CreatedDateTime = DateTime.Now
+                CreatedDateTime = DateTime.Now,
+                HasPrivateInsurance = dto.HasPrivateInsurance,
+                InsuranceProviders = dto.InsuranceProviders,
+                DischargePlans = dto.DischargePlans,
+                StayPeriod = dto.StayPeriod,
+                WifiPlan = dto.WifiPlan,
+                WifiSatisfaction = dto.WifiSatisfaction
             };
 
             _context.Respondents.Add(respondent);
@@ -115,7 +133,13 @@ namespace Ihospital.API.Controllers
                 HomeSuburb = respondent.HomeSuburb,
                 HomePostcode = respondent.HomePostcode,
                 MacAddress = respondent.MacAddress,
-                CreatedDateTime = respondent.CreatedDateTime
+                CreatedDateTime = respondent.CreatedDateTime,
+                HasPrivateInsurance = respondent.HasPrivateInsurance,
+                InsuranceProviders = respondent.InsuranceProviders,
+                DischargePlans = respondent.DischargePlans,
+                StayPeriod = respondent.StayPeriod,
+                WifiPlan = respondent.WifiPlan,
+                WifiSatisfaction = respondent.WifiSatisfaction
             };
 
             return CreatedAtAction(nameof(GetRespondent), new { id = respondent.RespondentId }, result);

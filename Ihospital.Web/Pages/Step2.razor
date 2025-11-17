@@ -48,6 +48,53 @@
                     </label>
                 </div>
             </div>
+
+            <div class="form-group">
+                <label>Private Health Insurance</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="hasInsurance" value="Yes" @onchange="() => SetInsurance(true)" checked="@(hasInsurance == true)" />
+                        <span>Yes</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="hasInsurance" value="No" @onchange="() => SetInsurance(false)" checked="@(hasInsurance == false)" />
+                        <span>No</span>
+                    </label>
+                </div>
+            </div>
+
+            @if (hasInsurance == true)
+            {
+                <div class="form-group">
+                    <label>Insurance Provider (Select up to 2)</label>
+                    <div class="checkbox-group">
+                        @foreach (var provider in providerOptions)
+                        {
+                            <label class="checkbox-option">
+                                <input type="checkbox" checked="@selectedProviders.Contains(provider)" @onchange="(e) => ToggleProvider(provider, e)" />
+                                <span>@provider</span>
+                            </label>
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(providerError))
+                    {
+                        <div class="error-message">@providerError</div>
+                    }
+                </div>
+            }
+
+            <div class="form-group">
+                <label>Discharge Plan (Select all that apply)</label>
+                <div class="checkbox-group">
+                    @foreach (var plan in dischargePlanOptions)
+                    {
+                        <label class="checkbox-option">
+                            <input type="checkbox" checked="@selectedDischargePlans.Contains(plan)" @onchange="(e) => ToggleDischargePlan(plan, e)" />
+                            <span>@plan</span>
+                        </label>
+                    }
+                </div>
+            </div>
         </div>
 
         <div class="form-actions">
@@ -66,6 +113,14 @@
     private bool diagnosticImaging = false;
     private bool laboratoryServices = false;
 
+    private bool? hasInsurance = null;
+    private string providerError = string.Empty;
+    private HashSet<string> selectedProviders = new(StringComparer.OrdinalIgnoreCase);
+    private readonly string[] providerOptions = new[] { "Medibank", "Bupa", "HCF", "NIB", "HBF", "AHM" };
+
+    private HashSet<string> selectedDischargePlans = new(StringComparer.OrdinalIgnoreCase);
+    private readonly string[] dischargePlanOptions = new[] { "Home Care", "Rehabilitation Program", "Follow-up Appointment", "Medication Plan", "Community Support" };
+
     protected override void OnInitialized()
     {
         // Load from state if exists
@@ -79,6 +134,12 @@
             diagnosticImaging = SurveyState.ServiceTypes.Contains("Diagnostic Imaging");
             laboratoryServices = SurveyState.ServiceTypes.Contains("Laboratory Services");
         }
+
+        hasInsurance = SurveyState.HasPrivateInsurance;
+        if (SurveyState.InsuranceProviders != null)
+            selectedProviders = new HashSet<string>(SurveyState.InsuranceProviders, StringComparer.OrdinalIgnoreCase);
+        if (SurveyState.DischargePlans != null)
+            selectedDischargePlans = new HashSet<string>(SurveyState.DischargePlans, StringComparer.OrdinalIgnoreCase);
     }
 
     private void NextStep()
@@ -95,11 +156,72 @@
 
         SurveyState.ServiceTypes = services;
 
-        Navigation.NavigateTo("/step3");
+        // Save insurance and discharge plans
+        SurveyState.HasPrivateInsurance = hasInsurance;
+        SurveyState.InsuranceProviders = selectedProviders.ToList();
+        SurveyState.DischargePlans = selectedDischargePlans.ToList();
+
+        // Decide next route: if Rehabilitation or Operation selected, collect room type next; else go to facilities
+        var needsRoomSelection = rehabilitation || operationSurgery;
+        if (needsRoomSelection)
+        {
+            Navigation.NavigateTo("/step3");
+        }
+        else
+        {
+            Navigation.NavigateTo("/step4");
+        }
     }
 
     private void GoBack()
     {
         Navigation.NavigateTo("/");
+    }
+
+    private void SetInsurance(bool value)
+    {
+        hasInsurance = value;
+        providerError = string.Empty;
+        if (!value)
+        {
+            selectedProviders.Clear();
+        }
+        StateHasChanged();
+    }
+
+    private void ToggleProvider(string provider, ChangeEventArgs e)
+    {
+        var check = e.Value is bool b && b;
+        if (check)
+        {
+            if (selectedProviders.Count >= 2)
+            {
+                providerError = "You can select at most 2 providers.";
+                StateHasChanged();
+                return;
+            }
+            providerError = string.Empty;
+            selectedProviders.Add(provider);
+        }
+        else
+        {
+            providerError = string.Empty;
+            selectedProviders.Remove(provider);
+        }
+        StateHasChanged();
+    }
+
+    private void ToggleDischargePlan(string plan, ChangeEventArgs e)
+    {
+        var check = e.Value is bool b && b;
+        if (check)
+        {
+            selectedDischargePlans.Add(plan);
+        }
+        else
+        {
+            selectedDischargePlans.Remove(plan);
+        }
+        StateHasChanged();
     }
 }

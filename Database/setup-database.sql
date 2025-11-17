@@ -47,7 +47,13 @@ CREATE TABLE RESPONDENT (
     Home_Suburb NVARCHAR(100),
     Home_Postcode NVARCHAR(10),
     Mac_Address NVARCHAR(50),
-    Created_DateTime DATETIME DEFAULT GETDATE()
+    Created_DateTime DATETIME DEFAULT GETDATE(),
+    Has_Private_Insurance BIT NULL,
+    Insurance_Providers NVARCHAR(500) NULL,
+    Discharge_Plans NVARCHAR(500) NULL,
+    Stay_Period NVARCHAR(100) NULL,
+    Wifi_Plan NVARCHAR(100) NULL,
+    Wifi_Satisfaction NVARCHAR(100) NULL
 );
 GO
 

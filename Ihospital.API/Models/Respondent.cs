@@ -59,6 +59,29 @@ namespace Ihospital.API.Models
         [Column("Created_DateTime")]
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;
 
+        [Column("Has_Private_Insurance")]
+        public bool? HasPrivateInsurance { get; set; }
+
+        [StringLength(500)]
+        [Column("Insurance_Providers")]
+        public string? InsuranceProviders { get; set; }
+
+        [StringLength(500)]
+        [Column("Discharge_Plans")]
+        public string? DischargePlans { get; set; }
+
+        [StringLength(100)]
+        [Column("Stay_Period")]
+        public string? StayPeriod { get; set; }
+
+        [StringLength(100)]
+        [Column("Wifi_Plan")]
+        public string? WifiPlan { get; set; }
+
+        [StringLength(100)]
+        [Column("Wifi_Satisfaction")]
+        public string? WifiSatisfaction { get; set; }
+
         // Navigation property
         public virtual ICollection<SurveyResponse> SurveyResponses { get; set; } = new List<SurveyResponse>();
     }

@@ -26,6 +26,18 @@
         <div class="search-section">
             <div class="search-grid">
                 <div class="search-field">
+                    <label>Title</label>
+                    <select class="form-select" @bind="searchTitle">
+                        <option value="">Search Title</option>
+                        <option value="Mr">Mr</option>
+                        <option value="Ms">Ms</option>
+                        <option value="Mrs">Mrs</option>
+                        <option value="Dr">Dr</option>
+                        <option value="Prof">Prof</option>
+                    </select>
+                </div>
+
+                <div class="search-field">
                     <label>First Name</label>
                     <input type="text" class="form-input" placeholder="Search By Firstname" @bind="searchFirstName" />
                 </div>
@@ -49,6 +61,16 @@
                 </div>
 
                 <div class="search-field">
+                    <label>Gender</label>
+                    <select class="form-select" @bind="searchGender">
+                        <option value="">Search Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+
+                <div class="search-field">
                     <label>State/Territory</label>
                     <select class="form-select" @bind="searchState">
                         <option value="">Select state</option>
@@ -64,7 +86,22 @@
                 </div>
 
                 <div class="search-field">
-                    <label>Type of Service</label>
+                    <label>Suburb</label>
+                    <input type="text" class="form-input" placeholder="Search Suburb" @bind="searchSuburb" />
+                </div>
+
+                <div class="search-field">
+                    <label>Postcode</label>
+                    <input type="text" class="form-input" placeholder="Search Postcode" @bind="searchPostcode" />
+                </div>
+
+                <div class="search-field">
+                    <label>Email</label>
+                    <input type="text" class="form-input" placeholder="Search Email" @bind="searchEmail" />
+                </div>
+
+                <div class="search-field">
+                    <label>Type of Service *</label>
                     <select class="form-select" @bind="searchServiceType">
                         <option value="">Search service type</option>
                         <option value="Day Surgery">Day Surgery</option>
@@ -78,7 +115,18 @@
                 </div>
 
                 <div class="search-field">
-                    <label>In Room Service</label>
+                    <label>Room Type</label>
+                    <select class="form-select" @bind="searchRoomType">
+                        <option value="">Search Room Type</option>
+                        <option value="Public Standard">Public Standard Room</option>
+                        <option value="Public Cluster">Public Cluster Room</option>
+                        <option value="Public Single">Public Single Room</option>
+                        <option value="Private Single">Private Single Room</option>
+                    </select>
+                </div>
+
+                <div class="search-field">
+                    <label>In Room Service *</label>
                     <select class="form-select" @bind="searchRoomService">
                         <option value="">Search room service</option>
                         <option value="WiFi">WiFi</option>
@@ -88,6 +136,19 @@
                         <option value="Climate Control">Climate Control</option>
                         <option value="Private Bathroom">Private Bathroom</option>
                         <option value="Visitor Seating">Visitor Seating</option>
+                    </select>
+                </div>
+
+                <div class="search-field">
+                    <label>Insurance Provider</label>
+                    <select class="form-select" @bind="searchInsuranceProvider">
+                        <option value="">Search Insurance</option>
+                        <option value="Medibank">Medibank</option>
+                        <option value="Bupa">Bupa</option>
+                        <option value="HCF">HCF</option>
+                        <option value="NIB">NIB</option>
+                        <option value="HBF">HBF</option>
+                        <option value="AHM">AHM</option>
                     </select>
                 </div>
             </div>
@@ -149,12 +210,19 @@
 </div>
 
 @code {
+    private string searchTitle = "";
     private string searchFirstName = "";
     private string searchLastName = "";
     private string searchAgeRange = "";
+    private string searchGender = "";
     private string searchState = "";
+    private string searchSuburb = "";
+    private string searchPostcode = "";
+    private string searchEmail = "";
     private string searchServiceType = "";
+    private string searchRoomType = "";
     private string searchRoomService = "";
+    private string searchInsuranceProvider = "";
     private bool isLoading = false;
 
     private List<SurveyResponseViewModel>? surveyResponses;
@@ -175,167 +243,242 @@
             {
                 new SurveyResponseViewModel
                 {
+                    Title = "Mr",
                     FirstName = "John",
                     LastName = "Smith",
                     AgeRange = "26-35",
                     Gender = "Male",
                     State = "NSW",
+                    Suburb = "Sydney",
+                    Postcode = "2000",
+                    Email = "john.smith@email.com",
                     ServiceType = "Day Surgery",
-                    RoomType = "Public Standard",
+                    RoomType = "Public Standard Room",
+                    InsuranceProviders = "Medibank",
                     Date = "2025-11-10"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "Ms",
                     FirstName = "Sarah",
                     LastName = "Johnson",
                     AgeRange = "36-45",
                     Gender = "Female",
                     State = "VIC",
+                    Suburb = "Melbourne",
+                    Postcode = "3000",
+                    Email = "sarah.j@email.com",
                     ServiceType = "Rehabilitation",
-                    RoomType = "Private Room",
+                    RoomType = "Private Single Room",
+                    InsuranceProviders = "Bupa, HCF",
                     Date = "2025-11-11"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "Dr",
                     FirstName = "Michael",
                     LastName = "Brown",
                     AgeRange = "46-55",
                     Gender = "Male",
                     State = "QLD",
+                    Suburb = "Brisbane",
+                    Postcode = "4000",
+                    Email = "m.brown@email.com",
                     ServiceType = "Emergency Care",
                     RoomType = "Emergency Ward",
+                    InsuranceProviders = "",
                     Date = "2025-11-12"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "Mrs",
                     FirstName = "Emma",
                     LastName = "Wilson",
                     AgeRange = "18-25",
                     Gender = "Female",
                     State = "WA",
+                    Suburb = "Perth",
+                    Postcode = "6000",
+                    Email = "emma.wilson@email.com",
                     ServiceType = "Outpatient Consultation",
-                    RoomType = "Consultation Room",
+                    RoomType = "N/A",
+                    InsuranceProviders = "NIB",
                     Date = "2025-11-12"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "Mr",
                     FirstName = "David",
                     LastName = "Lee",
                     AgeRange = "56-65",
                     Gender = "Male",
                     State = "SA",
+                    Suburb = "Adelaide",
+                    Postcode = "5000",
+                    Email = "david.lee@email.com",
                     ServiceType = "Diagnostic Imaging",
                     RoomType = "N/A",
+                    InsuranceProviders = "HBF",
                     Date = "2025-11-13"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "Ms",
                     FirstName = "Lisa",
                     LastName = "Anderson",
                     AgeRange = "26-35",
                     Gender = "Female",
                     State = "NSW",
+                    Suburb = "Parramatta",
+                    Postcode = "2150",
+                    Email = "lisa.a@email.com",
                     ServiceType = "Laboratory Services",
                     RoomType = "N/A",
+                    InsuranceProviders = "",
                     Date = "2025-11-13"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "Prof",
                     FirstName = "James",
                     LastName = "Taylor",
                     AgeRange = "36-45",
                     Gender = "Male",
                     State = "VIC",
+                    Suburb = "Geelong",
+                    Postcode = "3220",
+                    Email = "j.taylor@email.com",
                     ServiceType = "Operation/Surgery",
-                    RoomType = "Private Room",
+                    RoomType = "Private Single Room",
+                    InsuranceProviders = "Medibank",
                     Date = "2025-11-08"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "Mrs",
                     FirstName = "Olivia",
                     LastName = "Martinez",
                     AgeRange = "46-55",
                     Gender = "Female",
                     State = "QLD",
+                    Suburb = "Gold Coast",
+                    Postcode = "4217",
+                    Email = "olivia.m@email.com",
                     ServiceType = "Day Surgery",
-                    RoomType = "Day Surgery Unit",
+                    RoomType = "Public Single Room",
+                    InsuranceProviders = "AHM",
                     Date = "2025-11-09"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "Mr",
                     FirstName = "William",
                     LastName = "Garcia",
                     AgeRange = "65+",
                     Gender = "Male",
                     State = "TAS",
+                    Suburb = "Hobart",
+                    Postcode = "7000",
+                    Email = "w.garcia@email.com",
                     ServiceType = "Rehabilitation",
-                    RoomType = "Rehabilitation Ward",
+                    RoomType = "Public Cluster Room",
+                    InsuranceProviders = "",
                     Date = "2025-11-05"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "Ms",
                     FirstName = "Sophia",
                     LastName = "Rodriguez",
                     AgeRange = "26-35",
                     Gender = "Female",
                     State = "ACT",
+                    Suburb = "Canberra",
+                    Postcode = "2600",
+                    Email = "sophia.r@email.com",
                     ServiceType = "Emergency Care",
                     RoomType = "Emergency Ward",
+                    InsuranceProviders = "Bupa",
                     Date = "2025-11-13"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "Mr",
                     FirstName = "Daniel",
                     LastName = "Martinez",
                     AgeRange = "18-25",
                     Gender = "Male",
                     State = "NT",
+                    Suburb = "Darwin",
+                    Postcode = "0800",
+                    Email = "daniel.m@email.com",
                     ServiceType = "Outpatient Consultation",
-                    RoomType = "Consultation Room",
+                    RoomType = "N/A",
+                    InsuranceProviders = "",
                     Date = "2025-11-11"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "Mrs",
                     FirstName = "Ava",
                     LastName = "Thompson",
                     AgeRange = "36-45",
                     Gender = "Female",
                     State = "NSW",
+                    Suburb = "Newcastle",
+                    Postcode = "2300",
+                    Email = "ava.t@email.com",
                     ServiceType = "Diagnostic Imaging",
-                    RoomType = "Imaging Suite",
+                    RoomType = "N/A",
+                    InsuranceProviders = "HCF",
                     Date = "2025-11-10"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "",
                     FirstName = "Anonymous",
                     LastName = "",
                     AgeRange = "26-35",
                     Gender = "Male",
                     State = "VIC",
+                    Suburb = "",
+                    Postcode = "",
+                    Email = "",
                     ServiceType = "Day Surgery",
-                    RoomType = "Public Standard",
+                    RoomType = "Public Standard Room",
+                    InsuranceProviders = "",
                     Date = "2025-11-12"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "",
                     FirstName = "Anonymous",
                     LastName = "",
                     AgeRange = "46-55",
                     Gender = "Female",
                     State = "QLD",
+                    Suburb = "",
+                    Postcode = "",
+                    Email = "",
                     ServiceType = "Emergency Care",
                     RoomType = "Emergency Ward",
+                    InsuranceProviders = "",
                     Date = "2025-11-13"
                 },
                 new SurveyResponseViewModel
                 {
+                    Title = "Mr",
                     FirstName = "Robert",
                     LastName = "Davis",
                     AgeRange = "56-65",
                     Gender = "Male",
                     State = "WA",
+                    Suburb = "Fremantle",
+                    Postcode = "6160",
+                    Email = "robert.d@email.com",
                     ServiceType = "Operation/Surgery",
-                    RoomType = "Private Room",
+                    RoomType = "Private Single Room",
+                    InsuranceProviders = "Medibank, Bupa",
                     Date = "2025-11-07"
                 }
             };
@@ -358,12 +501,19 @@
         {
             // Filter responses based on search criteria
             var filtered = allResponses.Where(r =>
+                (string.IsNullOrEmpty(searchTitle) || r.Title == searchTitle) &&
                 (string.IsNullOrEmpty(searchFirstName) || r.FirstName.Contains(searchFirstName, StringComparison.OrdinalIgnoreCase)) &&
                 (string.IsNullOrEmpty(searchLastName) || r.LastName.Contains(searchLastName, StringComparison.OrdinalIgnoreCase)) &&
                 (string.IsNullOrEmpty(searchAgeRange) || r.AgeRange == searchAgeRange) &&
+                (string.IsNullOrEmpty(searchGender) || r.Gender == searchGender) &&
                 (string.IsNullOrEmpty(searchState) || r.State == searchState) &&
+                (string.IsNullOrEmpty(searchSuburb) || r.Suburb.Contains(searchSuburb, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrEmpty(searchPostcode) || r.Postcode.Contains(searchPostcode, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrEmpty(searchEmail) || r.Email.Contains(searchEmail, StringComparison.OrdinalIgnoreCase)) &&
                 (string.IsNullOrEmpty(searchServiceType) || r.ServiceType.Contains(searchServiceType, StringComparison.OrdinalIgnoreCase)) &&
-                (string.IsNullOrEmpty(searchRoomService) || r.RoomType.Contains(searchRoomService, StringComparison.OrdinalIgnoreCase))
+                (string.IsNullOrEmpty(searchRoomType) || r.RoomType.Contains(searchRoomType, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrEmpty(searchRoomService) || r.RoomType.Contains(searchRoomService, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrEmpty(searchInsuranceProvider) || r.InsuranceProviders.Contains(searchInsuranceProvider, StringComparison.OrdinalIgnoreCase))
             ).ToList();
 
             surveyResponses = filtered;
@@ -381,13 +531,18 @@
 
     public class SurveyResponseViewModel
     {
+        public string Title { get; set; } = "";
         public string FirstName { get; set; } = "";
         public string LastName { get; set; } = "";
         public string AgeRange { get; set; } = "";
         public string Gender { get; set; } = "";
         public string State { get; set; } = "";
+        public string Suburb { get; set; } = "";
+        public string Postcode { get; set; } = "";
+        public string Email { get; set; } = "";
         public string ServiceType { get; set; } = "";
         public string RoomType { get; set; } = "";
+        public string InsuranceProviders { get; set; } = "";
         public string Date { get; set; } = "";
     }
 }

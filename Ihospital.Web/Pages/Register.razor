@@ -112,14 +112,22 @@
                 Respondent = new
                 {
                     IsAnonymous = false,
+                    Title = SurveyState.Title,
                     FirstName = firstName,
                     LastName = lastName,
                     DateOfBirth = dateOfBirth.Value.ToString("yyyy-MM-dd"),
                     Gender = SurveyState.Gender,
                     ContactPhone = contactNumber,
+                    Email = SurveyState.Email,
                     State = SurveyState.State,
                     HomeSuburb = SurveyState.HomeSuburb,
-                    HomePostcode = SurveyState.HomePostcode
+                    HomePostcode = SurveyState.HomePostcode,
+                    HasPrivateInsurance = SurveyState.HasPrivateInsurance,
+                    InsuranceProviders = SurveyState.InsuranceProviders != null ? string.Join(", ", SurveyState.InsuranceProviders) : null,
+                    DischargePlans = SurveyState.DischargePlans != null ? string.Join(", ", SurveyState.DischargePlans) : null,
+                    StayPeriod = SurveyState.StayPeriod,
+                    WifiPlan = SurveyState.WifiPlan,
+                    WifiSatisfaction = SurveyState.WifiSatisfaction
                 },
                 Responses = PrepareResponses()
             };
@@ -161,10 +169,18 @@
                 Respondent = new
                 {
                     IsAnonymous = true,
+                    Title = SurveyState.Title,
                     Gender = SurveyState.Gender,
+                    Email = SurveyState.Email,
                     State = SurveyState.State,
                     HomeSuburb = SurveyState.HomeSuburb,
-                    HomePostcode = SurveyState.HomePostcode
+                    HomePostcode = SurveyState.HomePostcode,
+                    HasPrivateInsurance = SurveyState.HasPrivateInsurance,
+                    InsuranceProviders = SurveyState.InsuranceProviders != null ? string.Join(", ", SurveyState.InsuranceProviders) : null,
+                    DischargePlans = SurveyState.DischargePlans != null ? string.Join(", ", SurveyState.DischargePlans) : null,
+                    StayPeriod = SurveyState.StayPeriod,
+                    WifiPlan = SurveyState.WifiPlan,
+                    WifiSatisfaction = SurveyState.WifiSatisfaction
                 },
                 Responses = PrepareResponses()
             };
@@ -238,15 +254,31 @@
         }
 
         // Question 4: Additional Comments (Question_ID = 4) - Text
-        // Add room type and facilities as comments
+        // Add room type, facilities, insurance, discharge, stay, WiFi as comments
         var comments = new List<string>();
         if (!string.IsNullOrEmpty(SurveyState.RoomType))
         {
             comments.Add($"Room Type: {SurveyState.RoomType}");
         }
+        if (!string.IsNullOrEmpty(SurveyState.StayPeriod))
+        {
+            comments.Add($"Stay Period: {SurveyState.StayPeriod}");
+        }
         if (SurveyState.RoomFacilities != null && SurveyState.RoomFacilities.Any())
         {
             comments.Add($"Facilities: {string.Join(", ", SurveyState.RoomFacilities)}");
+        }
+        if (SurveyState.HasPrivateInsurance == true && SurveyState.InsuranceProviders != null && SurveyState.InsuranceProviders.Any())
+        {
+            comments.Add($"Insurance: {string.Join(", ", SurveyState.InsuranceProviders)}");
+        }
+        if (SurveyState.DischargePlans != null && SurveyState.DischargePlans.Any())
+        {
+            comments.Add($"Discharge Plan: {string.Join(", ", SurveyState.DischargePlans)}");
+        }
+        if (!string.IsNullOrEmpty(SurveyState.WifiPlan))
+        {
+            comments.Add($"WiFi Plan: {SurveyState.WifiPlan}, Satisfaction: {SurveyState.WifiSatisfaction}");
         }
         if (comments.Any())
         {

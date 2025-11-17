@@ -16,38 +16,73 @@
 
         <div class="survey-form">
             <div class="form-group">
-                <label>Room Facilities (Select all that apply)</label>
+                <label>Room Facilities (Select up to 4)</label>
                 <div class="checkbox-group">
                     <label class="checkbox-option">
-                        <input type="checkbox" @bind="wifi" />
+                        <input type="checkbox" checked="@wifi" @onchange="(e) => ToggleFacility(nameof(wifi), e)" />
                         <span>WiFi</span>
                     </label>
                     <label class="checkbox-option">
-                        <input type="checkbox" @bind="mealOrderSystem" />
+                        <input type="checkbox" checked="@mealOrderSystem" @onchange="(e) => ToggleFacility(nameof(mealOrderSystem), e)" />
                         <span>Meal Order System</span>
                     </label>
                     <label class="checkbox-option">
-                        <input type="checkbox" @bind="nurseAssistantCall" />
+                        <input type="checkbox" checked="@nurseAssistantCall" @onchange="(e) => ToggleFacility(nameof(nurseAssistantCall), e)" />
                         <span>Nurse Assistant Call</span>
                     </label>
                     <label class="checkbox-option">
-                        <input type="checkbox" @bind="entertainmentSystem" />
+                        <input type="checkbox" checked="@entertainmentSystem" @onchange="(e) => ToggleFacility(nameof(entertainmentSystem), e)" />
                         <span>Entertainment System</span>
                     </label>
                     <label class="checkbox-option">
-                        <input type="checkbox" @bind="climateControl" />
+                        <input type="checkbox" checked="@climateControl" @onchange="(e) => ToggleFacility(nameof(climateControl), e)" />
                         <span>Climate Control</span>
                     </label>
                     <label class="checkbox-option">
-                        <input type="checkbox" @bind="privateBathroom" />
+                        <input type="checkbox" checked="@privateBathroom" @onchange="(e) => ToggleFacility(nameof(privateBathroom), e)" />
                         <span>Private Bathroom</span>
                     </label>
                     <label class="checkbox-option">
-                        <input type="checkbox" @bind="visitorSeating" />
+                        <input type="checkbox" checked="@visitorSeating" @onchange="(e) => ToggleFacility(nameof(visitorSeating), e)" />
                         <span>Visitor Seating</span>
                     </label>
                 </div>
+                @if (!string.IsNullOrEmpty(facilityError))
+                {
+                    <div class="error-message">@facilityError</div>
+                }
             </div>
+
+            @* WiFi-specific questions shown only if WiFi was selected *@
+            @if (wifi)
+            {
+                <div class="form-group">
+                    <label>WiFi Plan Selected</label>
+                    <select class="form-select" @bind="wifiPlan">
+                        <option value="">Select WiFi Plan</option>
+                        <option value="Standard">Standard (Free)</option>
+                        <option value="Premium">Premium</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>WiFi Satisfaction</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="wifiSatisfaction" value="Satisfied" @onchange="@(() => wifiSatisfaction = "Satisfied")" checked="@(wifiSatisfaction == "Satisfied")" />
+                            <span>Satisfied</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="wifiSatisfaction" value="Neutral" @onchange="@(() => wifiSatisfaction = "Neutral")" checked="@(wifiSatisfaction == "Neutral")" />
+                            <span>Neutral</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="wifiSatisfaction" value="Unsatisfied" @onchange="@(() => wifiSatisfaction = "Unsatisfied")" checked="@(wifiSatisfaction == "Unsatisfied")" />
+                            <span>Unsatisfied</span>
+                        </label>
+                    </div>
+                </div>
+            }
         </div>
 
         <div class="form-actions">
@@ -66,6 +101,10 @@
     private bool privateBathroom = false;
     private bool visitorSeating = false;
 
+    private string facilityError = string.Empty;
+    private string wifiPlan = "";
+    private string wifiSatisfaction = "";
+
     protected override void OnInitialized()
     {
         if (SurveyState.RoomFacilities != null)
@@ -78,6 +117,70 @@
             privateBathroom = SurveyState.RoomFacilities.Contains("Private Bathroom");
             visitorSeating = SurveyState.RoomFacilities.Contains("Visitor Seating");
         }
+        if (!string.IsNullOrEmpty(SurveyState.WifiPlan))
+            wifiPlan = SurveyState.WifiPlan;
+        if (!string.IsNullOrEmpty(SurveyState.WifiSatisfaction))
+            wifiSatisfaction = SurveyState.WifiSatisfaction;
+    }
+
+    private void ToggleFacility(string facilityName, ChangeEventArgs e)
+    {
+        var check = e.Value is bool b && b;
+        var countSelected = GetSelectedCount();
+
+        if (check && countSelected >= 4)
+        {
+            facilityError = "You can select at most 4 facilities.";
+            StateHasChanged();
+            return;
+        }
+
+        facilityError = string.Empty;
+
+        switch (facilityName)
+        {
+            case nameof(wifi):
+                wifi = check;
+                if (!check)
+                {
+                    wifiPlan = "";
+                    wifiSatisfaction = "";
+                }
+                break;
+            case nameof(mealOrderSystem):
+                mealOrderSystem = check;
+                break;
+            case nameof(nurseAssistantCall):
+                nurseAssistantCall = check;
+                break;
+            case nameof(entertainmentSystem):
+                entertainmentSystem = check;
+                break;
+            case nameof(climateControl):
+                climateControl = check;
+                break;
+            case nameof(privateBathroom):
+                privateBathroom = check;
+                break;
+            case nameof(visitorSeating):
+                visitorSeating = check;
+                break;
+        }
+
+        StateHasChanged();
+    }
+
+    private int GetSelectedCount()
+    {
+        int count = 0;
+        if (wifi) count++;
+        if (mealOrderSystem) count++;
+        if (nurseAssistantCall) count++;
+        if (entertainmentSystem) count++;
+        if (climateControl) count++;
+        if (privateBathroom) count++;
+        if (visitorSeating) count++;
+        return count;
     }
 
     private void NextStep()
@@ -92,6 +195,8 @@
         if (visitorSeating) facilities.Add("Visitor Seating");
 
         SurveyState.RoomFacilities = facilities;
+        SurveyState.WifiPlan = wifiPlan;
+        SurveyState.WifiSatisfaction = wifiSatisfaction;
 
         Navigation.NavigateTo("/register");
     }

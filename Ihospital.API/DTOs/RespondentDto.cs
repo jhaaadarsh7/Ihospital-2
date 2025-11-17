@@ -16,6 +16,12 @@ namespace Ihospital.API.DTOs
         public string? HomePostcode { get; set; }
         public string? MacAddress { get; set; }
         public DateTime CreatedDateTime { get; set; }
+        public bool? HasPrivateInsurance { get; set; }
+        public string? InsuranceProviders { get; set; }
+        public string? DischargePlans { get; set; }
+        public string? StayPeriod { get; set; }
+        public string? WifiPlan { get; set; }
+        public string? WifiSatisfaction { get; set; }
     }
 
     public class CreateRespondentDto
@@ -32,6 +38,12 @@ namespace Ihospital.API.DTOs
         public string? HomeSuburb { get; set; }
         public string? HomePostcode { get; set; }
         public string? MacAddress { get; set; }
+        public bool? HasPrivateInsurance { get; set; }
+        public string? InsuranceProviders { get; set; }
+        public string? DischargePlans { get; set; }
+        public string? StayPeriod { get; set; }
+        public string? WifiPlan { get; set; }
+        public string? WifiSatisfaction { get; set; }
     }
 
     public class UpdateRespondentDto

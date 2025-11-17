@@ -30,3 +30,4 @@ C:\Users\acer\Desktop\Ihospital\Ihospital.Web\obj\Debug\net8.0\refint\Ihospital.
 C:\Users\acer\Desktop\Ihospital\Ihospital.Web\obj\Debug\net8.0\Ihospital.Web.pdb
 C:\Users\acer\Desktop\Ihospital\Ihospital.Web\obj\Debug\net8.0\Ihospital.Web.genruntimeconfig.cache
 C:\Users\acer\Desktop\Ihospital\Ihospital.Web\obj\Debug\net8.0\ref\Ihospital.Web.dll
+C:\Users\acer\Desktop\Ihospital\Ihospital.Web\obj\Debug\net8.0\Ihospital.Web.sourcelink.json

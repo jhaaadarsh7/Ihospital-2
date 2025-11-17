@@ -187,7 +187,13 @@ namespace Ihospital.API.Controllers
                         HomeSuburb = dto.Respondent.HomeSuburb,
                         HomePostcode = dto.Respondent.HomePostcode,
                         MacAddress = dto.Respondent.MacAddress,
-                        CreatedDateTime = DateTime.Now
+                        CreatedDateTime = DateTime.Now,
+                        HasPrivateInsurance = dto.Respondent.HasPrivateInsurance,
+                        InsuranceProviders = dto.Respondent.InsuranceProviders,
+                        DischargePlans = dto.Respondent.DischargePlans,
+                        StayPeriod = dto.Respondent.StayPeriod,
+                        WifiPlan = dto.Respondent.WifiPlan,
+                        WifiSatisfaction = dto.Respondent.WifiSatisfaction
                     };
 
                     _context.Respondents.Add(respondent);
