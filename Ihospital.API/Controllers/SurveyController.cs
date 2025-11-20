@@ -192,7 +192,7 @@ namespace Ihospital.API.Controllers
                         InsuranceProviders = dto.Respondent.InsuranceProviders,
                         DischargePlans = dto.Respondent.DischargePlans,
                         StayPeriod = dto.Respondent.StayPeriod,
-                        WifiPlan = dto.Respondent.WifiPlan,
+                        WifiServicesUsed = dto.Respondent.WifiServicesUsed,
                         WifiSatisfaction = dto.Respondent.WifiSatisfaction
                     };
 

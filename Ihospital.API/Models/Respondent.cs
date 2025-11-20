@@ -82,6 +82,10 @@ namespace Ihospital.API.Models
         [Column("Wifi_Satisfaction")]
         public string? WifiSatisfaction { get; set; }
 
+        [StringLength(500)]
+        [Column("Wifi_Services_Used")]
+        public string? WifiServicesUsed { get; set; }
+
         // Navigation property
         public virtual ICollection<SurveyResponse> SurveyResponses { get; set; } = new List<SurveyResponse>();
     }

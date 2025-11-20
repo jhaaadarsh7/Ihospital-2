@@ -22,6 +22,7 @@ namespace Ihospital.API.DTOs
         public string? StayPeriod { get; set; }
         public string? WifiPlan { get; set; }
         public string? WifiSatisfaction { get; set; }
+        public string? WifiServicesUsed { get; set; }
     }
 
     public class CreateRespondentDto
@@ -44,6 +45,7 @@ namespace Ihospital.API.DTOs
         public string? StayPeriod { get; set; }
         public string? WifiPlan { get; set; }
         public string? WifiSatisfaction { get; set; }
+        public string? WifiServicesUsed { get; set; }
     }
 
     public class UpdateRespondentDto
@@ -59,5 +61,6 @@ namespace Ihospital.API.DTOs
         public string? State { get; set; }
         public string? HomeSuburb { get; set; }
         public string? HomePostcode { get; set; }
+        public string? WifiServicesUsed { get; set; }
     }
 }

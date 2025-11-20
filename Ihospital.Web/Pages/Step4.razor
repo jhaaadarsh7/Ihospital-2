@@ -57,12 +57,25 @@
             @if (wifi)
             {
                 <div class="form-group">
-                    <label>WiFi Plan Selected</label>
-                    <select class="form-select" @bind="wifiPlan">
-                        <option value="">Select WiFi Plan</option>
-                        <option value="Standard">Standard (Free)</option>
-                        <option value="Premium">Premium</option>
-                    </select>
+                    <label>WiFi Service(s) Used (Select all that apply)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" checked="@wifiService30Min" @onchange="(e) => wifiService30Min = (bool)e.Value" />
+                            <span>30 Minutes Free WiFi (Reset Daily)</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" checked="@wifiService1Hour" @onchange="(e) => wifiService1Hour = (bool)e.Value" />
+                            <span>$1 for 1 hour Full Speed WiFi</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" checked="@wifiService1Day" @onchange="(e) => wifiService1Day = (bool)e.Value" />
+                            <span>$5 for 1 day Full Speed WiFi</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" checked="@wifiService1Week" @onchange="(e) => wifiService1Week = (bool)e.Value" />
+                            <span>$20 for 1 week Full Speed WiFi</span>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -102,7 +115,13 @@
     private bool visitorSeating = false;
 
     private string facilityError = string.Empty;
-    private string wifiPlan = "";
+    
+    // WiFi service options
+    private bool wifiService30Min = false;
+    private bool wifiService1Hour = false;
+    private bool wifiService1Day = false;
+    private bool wifiService1Week = false;
+    
     private string wifiSatisfaction = "";
 
     protected override void OnInitialized()
@@ -117,8 +136,16 @@
             privateBathroom = SurveyState.RoomFacilities.Contains("Private Bathroom");
             visitorSeating = SurveyState.RoomFacilities.Contains("Visitor Seating");
         }
-        if (!string.IsNullOrEmpty(SurveyState.WifiPlan))
-            wifiPlan = SurveyState.WifiPlan;
+        
+        // Load WiFi services from state
+        if (SurveyState.WifiServicesUsed != null)
+        {
+            wifiService30Min = SurveyState.WifiServicesUsed.Contains("30 Minutes Free WiFi (Reset Daily)");
+            wifiService1Hour = SurveyState.WifiServicesUsed.Contains("$1 for 1 hour Full Speed WiFi");
+            wifiService1Day = SurveyState.WifiServicesUsed.Contains("$5 for 1 day Full Speed WiFi");
+            wifiService1Week = SurveyState.WifiServicesUsed.Contains("$20 for 1 week Full Speed WiFi");
+        }
+        
         if (!string.IsNullOrEmpty(SurveyState.WifiSatisfaction))
             wifiSatisfaction = SurveyState.WifiSatisfaction;
     }
@@ -143,7 +170,11 @@
                 wifi = check;
                 if (!check)
                 {
-                    wifiPlan = "";
+                    // Reset WiFi services when WiFi is unchecked
+                    wifiService30Min = false;
+                    wifiService1Hour = false;
+                    wifiService1Day = false;
+                    wifiService1Week = false;
                     wifiSatisfaction = "";
                 }
                 break;
@@ -195,7 +226,15 @@
         if (visitorSeating) facilities.Add("Visitor Seating");
 
         SurveyState.RoomFacilities = facilities;
-        SurveyState.WifiPlan = wifiPlan;
+        
+        // Save WiFi services used
+        var wifiServices = new List<string>();
+        if (wifiService30Min) wifiServices.Add("30 Minutes Free WiFi (Reset Daily)");
+        if (wifiService1Hour) wifiServices.Add("$1 for 1 hour Full Speed WiFi");
+        if (wifiService1Day) wifiServices.Add("$5 for 1 day Full Speed WiFi");
+        if (wifiService1Week) wifiServices.Add("$20 for 1 week Full Speed WiFi");
+        
+        SurveyState.WifiServicesUsed = wifiServices;
         SurveyState.WifiSatisfaction = wifiSatisfaction;
 
         Navigation.NavigateTo("/register");

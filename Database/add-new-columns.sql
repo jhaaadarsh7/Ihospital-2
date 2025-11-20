@@ -41,5 +41,11 @@ BEGIN
     PRINT 'Added Wifi_Satisfaction column';
 END
 
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('RESPONDENT') AND name = 'Wifi_Services_Used')
+BEGIN
+    ALTER TABLE RESPONDENT ADD Wifi_Services_Used NVARCHAR(MAX) NULL;
+    PRINT 'Added Wifi_Services_Used column';
+END
+
 PRINT 'Database schema update completed successfully!';
 GO

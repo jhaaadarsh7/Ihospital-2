@@ -44,7 +44,8 @@ namespace Ihospital.API.Controllers
                     DischargePlans = r.DischargePlans,
                     StayPeriod = r.StayPeriod,
                     WifiPlan = r.WifiPlan,
-                    WifiSatisfaction = r.WifiSatisfaction
+                    WifiSatisfaction = r.WifiSatisfaction,
+                    WifiServicesUsed = r.WifiServicesUsed
                 })
                 .OrderByDescending(r => r.CreatedDateTime)
                 .ToListAsync();
@@ -78,7 +79,7 @@ namespace Ihospital.API.Controllers
                     InsuranceProviders = r.InsuranceProviders,
                     DischargePlans = r.DischargePlans,
                     StayPeriod = r.StayPeriod,
-                    WifiPlan = r.WifiPlan,
+                    WifiServicesUsed = r.WifiServicesUsed,
                     WifiSatisfaction = r.WifiSatisfaction
                 })
                 .FirstOrDefaultAsync();
@@ -112,7 +113,8 @@ namespace Ihospital.API.Controllers
                 DischargePlans = dto.DischargePlans,
                 StayPeriod = dto.StayPeriod,
                 WifiPlan = dto.WifiPlan,
-                WifiSatisfaction = dto.WifiSatisfaction
+                WifiSatisfaction = dto.WifiSatisfaction,
+                WifiServicesUsed = dto.WifiServicesUsed,
             };
 
             _context.Respondents.Add(respondent);
@@ -138,7 +140,7 @@ namespace Ihospital.API.Controllers
                 InsuranceProviders = respondent.InsuranceProviders,
                 DischargePlans = respondent.DischargePlans,
                 StayPeriod = respondent.StayPeriod,
-                WifiPlan = respondent.WifiPlan,
+                WifiServicesUsed = respondent.WifiServicesUsed,
                 WifiSatisfaction = respondent.WifiSatisfaction
             };
 
@@ -177,6 +179,8 @@ namespace Ihospital.API.Controllers
                 respondent.HomeSuburb = dto.HomeSuburb;
             if (dto.HomePostcode != null)
                 respondent.HomePostcode = dto.HomePostcode;
+            if (dto.WifiServicesUsed != null)
+                respondent.WifiServicesUsed = dto.WifiServicesUsed;
 
             await _context.SaveChangesAsync();
 

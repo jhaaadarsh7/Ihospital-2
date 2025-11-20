@@ -126,7 +126,7 @@
                     InsuranceProviders = SurveyState.InsuranceProviders != null ? string.Join(", ", SurveyState.InsuranceProviders) : null,
                     DischargePlans = SurveyState.DischargePlans != null ? string.Join(", ", SurveyState.DischargePlans) : null,
                     StayPeriod = SurveyState.StayPeriod,
-                    WifiPlan = SurveyState.WifiPlan,
+                    WifiServicesUsed = SurveyState.WifiServicesUsed != null ? string.Join(", ", SurveyState.WifiServicesUsed) : null,
                     WifiSatisfaction = SurveyState.WifiSatisfaction
                 },
                 Responses = PrepareResponses()
@@ -179,7 +179,7 @@
                     InsuranceProviders = SurveyState.InsuranceProviders != null ? string.Join(", ", SurveyState.InsuranceProviders) : null,
                     DischargePlans = SurveyState.DischargePlans != null ? string.Join(", ", SurveyState.DischargePlans) : null,
                     StayPeriod = SurveyState.StayPeriod,
-                    WifiPlan = SurveyState.WifiPlan,
+                    WifiServicesUsed = SurveyState.WifiServicesUsed != null ? string.Join(", ", SurveyState.WifiServicesUsed) : null,
                     WifiSatisfaction = SurveyState.WifiSatisfaction
                 },
                 Responses = PrepareResponses()
@@ -276,9 +276,9 @@
         {
             comments.Add($"Discharge Plan: {string.Join(", ", SurveyState.DischargePlans)}");
         }
-        if (!string.IsNullOrEmpty(SurveyState.WifiPlan))
+        if (SurveyState.WifiServicesUsed != null && SurveyState.WifiServicesUsed.Any())
         {
-            comments.Add($"WiFi Plan: {SurveyState.WifiPlan}, Satisfaction: {SurveyState.WifiSatisfaction}");
+            comments.Add($"WiFi Services: {string.Join(", ", SurveyState.WifiServicesUsed)}, Satisfaction: {SurveyState.WifiSatisfaction}");
         }
         if (comments.Any())
         {

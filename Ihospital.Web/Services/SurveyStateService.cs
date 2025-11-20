@@ -16,7 +16,7 @@ namespace Ihospital.Web.Services
         List<string>? InsuranceProviders { get; set; }
         List<string>? DischargePlans { get; set; }
         string? StayPeriod { get; set; }
-        string? WifiPlan { get; set; }
+        List<string>? WifiServicesUsed { get; set; }
         string? WifiSatisfaction { get; set; }
         void Clear();
     }
@@ -37,7 +37,7 @@ namespace Ihospital.Web.Services
         public List<string>? InsuranceProviders { get; set; }
         public List<string>? DischargePlans { get; set; }
         public string? StayPeriod { get; set; }
-        public string? WifiPlan { get; set; }
+        public List<string>? WifiServicesUsed { get; set; }
         public string? WifiSatisfaction { get; set; }
 
         public void Clear()
@@ -56,7 +56,7 @@ namespace Ihospital.Web.Services
             InsuranceProviders = null;
             DischargePlans = null;
             StayPeriod = null;
-            WifiPlan = null;
+            WifiServicesUsed = null;
             WifiSatisfaction = null;
         }
     }
